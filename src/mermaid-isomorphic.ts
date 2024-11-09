@@ -284,6 +284,8 @@ export function createMermaidRenderer(options: CreateMermaidRendererOptions = {}
 
     try {
       page = await context.newPage()
+      page.setDefaultTimeout(300_000)
+      page.setDefaultNavigationTimeout(300_000)
       await page.goto(html)
       const promises = [page.addStyleTag(faStyle), page.addScriptTag(mermaidScript)]
       const css = renderOptions?.css
