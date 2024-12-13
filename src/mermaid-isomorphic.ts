@@ -3,14 +3,18 @@ import { type BrowserType, chromium, type LaunchOptions, type Page } from 'playw
 
 declare const mermaid: Mermaid
 
-const html = import.meta.resolve('../index.html')
-const mermaidScript = {
-  url: import.meta.resolve('mermaid/dist/mermaid.js')
-}
-const faStyle = {
-  // We use url, not path. If we use path, the fonts can’t be resolved.
-  url: import.meta.resolve('@fortawesome/fontawesome-free/css/all.css')
-}
+const html = `<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.1/css/all.css" />
+</head>
+
+</html>
+`
 
 export interface CreateMermaidRendererOptions {
   /**
@@ -293,8 +297,8 @@ export function createMermaidRenderer(options: CreateMermaidRendererOptions = {}
 
     try {
       page = await context.newPage()
-      await page.goto(html)
-      const promises = [page.addStyleTag(faStyle), page.addScriptTag(mermaidScript)]
+      await page.goto(`data:text/html,${encodeURIComponent(html)}`)
+      const promises = []
       const css = renderOptions?.css
       if (typeof css === 'string' || css instanceof URL) {
         promises.push(page.addStyleTag({ url: String(css) }))
