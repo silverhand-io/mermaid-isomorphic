@@ -225,6 +225,13 @@ interface SimpleContext {
 }
 
 /**
+ * The options used to launch the browser. If a string is provided, it will be used as the CDP
+ * connection string for `browserType.connectOverCDP()`; otherwise, it will be passed to
+ * `browserType.launch()`.
+ */
+type BrowserLaunchOptions = LaunchOptions | string
+
+/**
  * Launch a browser and a single browser context.
  *
  * @param browserType
@@ -236,9 +243,11 @@ interface SimpleContext {
  */
 async function getBrowser(
   browserType: BrowserType,
-  launchOptions: LaunchOptions | undefined
+  launchOptions: BrowserLaunchOptions | undefined
 ): Promise<SimpleContext> {
-  const browser = await browserType.launch(launchOptions)
+  const browser = await (typeof launchOptions === 'string'
+    ? browserType.connectOverCDP(launchOptions)
+    : browserType.launch(launchOptions))
   const context = await browser.newContext({ bypassCSP: true })
 
   return {
